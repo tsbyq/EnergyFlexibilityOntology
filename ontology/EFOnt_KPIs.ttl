@@ -4,7 +4,7 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix qudt: <http://qudt.org/schema/qudt/> .
-@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
 @prefix efkpis: <http://example.org/efkpis#> .
 
 # Classes
@@ -57,7 +57,8 @@ efkpis:temporalResolutionValue rdf:type owl:DatatypeProperty ;
 
 efkpis:physicalQuantity rdf:type owl:ObjectProperty ;
     rdfs:domain efkpis:InputVariable ;
-    rdfs:range qudt:QuantityKind .  # Linking to QUDT's QuantityKind class
+    rdfs:range [ rdf:type owl:Class ;
+                 owl:unionOf (qudt:QuantityKind qudt:DateTimeStringEncodingType) ] . # Linking to QUDT's class
 
 # ------------------------------------------------------------------------------
 ## Object Properties
@@ -65,7 +66,7 @@ efkpis:physicalQuantity rdf:type owl:ObjectProperty ;
 efkpis:hasUnit rdf:type owl:ObjectProperty ;
     rdfs:domain [ rdf:type owl:Class ;
                   owl:unionOf (efkpis:KPI efkpis:InputVariable) ] ;
-    rdfs:range owl:Thing .  # Broad range to include literals and class instances
+    rdfs:range qudt:Unit .  # Using QUDT Unit class
 
 
 efkpis:hasComplexity rdf:type owl:ObjectProperty ;
@@ -225,7 +226,7 @@ efkpis:ComfortPerformance rdf:type efkpis:PerformanceAspect ;
 efkpis:FlexibilityFactor rdf:type efkpis:KPI ;
     rdfs:label "FlexibilityFactor" ;
     skos:definition "Indicator of a quantity (e.g., energy, cost, emissions) during high load hours versus during low load hours, which ranges between -1 (quantity was only during high load hours) and 1 (quantity was only during low load hours)." ;
-    efkpis:hasUnit "factor" ;
+    :hasUnitefkpis "factor" ;
     efkpis:hasComplexity efkpis:LowComplexity ;
     efkpis:hasRelevance efkpis:HighRelevance ;
     efkpis:hasStakeholder efkpis:BuildingOperator, efkpis:Researcher ;
@@ -242,7 +243,7 @@ efkpis:FlexibilityFactor rdf:type efkpis:KPI ;
 efkpis:PeakPowerReduction rdf:type efkpis:KPI ;
     rdfs:label "Peak Power Reduction" ;
     skos:definition "Reduced power demand during peak hour due to flexible operation. The evaluation window should consider the peak hour after the flexible operation." ;
-    efkpis:hasUnit om:kilowatt ;  # Assuming use of OM ontology for unit
+    efkpis:hasUnit unit:KiloW ;  # Assuming use of qudt ontology for unit
     efkpis:hasRelevance efkpis:HighRelevance ;
     efkpis:hasStakeholder efkpis:DistributionSystemOperator, efkpis:TransmissionSystemOperator ;
     efkpis:hasComplexity efkpis:LowComplexity ;
@@ -265,12 +266,12 @@ efkpis:EvaluationWindow rdf:type efkpis:TimePeriod ;
 # ------------------------------------------------------------------------------
 ## Input Variable Instances
 # ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~ Single Value Input Variables ~~~~~~~~~~~~
 ## HighLoadStartTimestamp
 efkpis:HighLoadStartTimestamp rdf:type efkpis:SingleValueInputVariable ;
     rdfs:label "HighLoadStartTimestamp" ;
     skos:definition "The datetime when unit price/emission are higher, or the start of the peak hours." ;
-    efkpis:timestampValue "___"^^xsd:dateTime ;  # Placeholder for actual datetime
-    efkpis:physicalQuantity qudt:TimeQuantity ;  # Using QUDT ontology for 'time'
+    efkpis:physicalQuantity qudt:DateTimeStringEncodingType ;  # Using QUDT ontology for datetime encoding
     efkpis:hasUnit "datetime" .  # Indicative unit representation for a timestamp
 
 ## HighLoadEndTimestamp
@@ -289,11 +290,12 @@ efkpis:PeakTimestamp rdf:type efkpis:SingleValueInputVariable ;
     efkpis:physicalQuantity "time" ;  # Representing the physical quantity as 'time'
     efkpis:hasUnit "datetime" .  # Indicative unit representation for a timestamp
 
+# ~~~~~~~~~~~~ Serial Value Input Variables ~~~~~~~~~~~~
 ## GenericLoadProfile
 efkpis:GenericLoadProfile rdf:type efkpis:SerialValueInputVariable  ;
     rdfs:label "GenericLoadProfile" ;
     skos:definition "A generic time series of energy, cost, or GHG emissions, measured in uncontrolled conditions." ;
-    efkpis:temporalResolutionUnit om:second-Time ;  # Referencing OM unit for second, this can be changed to other units (e.g., om:hour, om:day)
+    efkpis:temporalResolutionUnit unit:SEC ;  # Referencing OM unit for second, this can be changed to other units (e.g., unit:HR, unit:DAY)
     efkpis:temporalResolutionValue "___"^^xsd:integer ;  # Placeholder for actual temporal resolution value
     efkpis:startTime "___"^^xsd:dateTime ;  # Placeholder for actual start time
     efkpis:endTime "___"^^xsd:dateTime .    # Placeholder for actual end time
@@ -302,15 +304,16 @@ efkpis:GenericLoadProfile rdf:type efkpis:SerialValueInputVariable  ;
 efkpis:BaselineElectricPowerProfile rdf:type efkpis:SerialValueInputVariable  ;
     rdfs:label "Baseline Electric Power Profile" ;
     skos:definition "A time series representing the electric power profile under normal (non-flexible) operation conditions, used as a baseline for comparison." ;
-    efkpis:timestampValue "___"^^xsd:dateTime ;  # Placeholder for actual datetime values
-    efkpis:temporalResolutionUnit om:watt ;     # Assuming usage of OM ontology unit watt
-    efkpis:temporalResolutionValue "___"^^xsd:integer .  # Placeholder for temporal resolution value
+    efkpis:temporalResolutionUnit unit:SEC ;  # Referencing OM unit for second, this can be changed to other units (e.g., unit:HR, unit:DAY)
+    efkpis:temporalResolutionValue "___"^^xsd:integer ;  # Placeholder for actual temporal resolution value
+    efkpis:startTime "___"^^xsd:dateTime ;  # Placeholder for actual start time
+    efkpis:endTime "___"^^xsd:dateTime .    # Placeholder for actual end time
 
 ## Flexible Electric Power Profile
 efkpis:FlexibleElectricPowerProfile rdf:type efkpis:SerialValueInputVariable  ;
     rdfs:label "Flexible Electric Power Profile" ;
     skos:definition "A time series representing the electric power profile during flexible operation, reflecting changes due to demand response or other flexibility strategies." ;
-    efkpis:timestampValue "___"^^xsd:dateTime ;  # Placeholder for actual datetime values
-    efkpis:temporalResolutionUnit om:watt ;     # Assuming usage of OM ontology unit watt
-    efkpis:temporalResolutionValue "___"^^xsd:integer .  # Placeholder for temporal resolution value
-
+    efkpis:temporalResolutionUnit unit:SEC ;  # Referencing OM unit for second, this can be changed to other units (e.g., unit:HR, unit:DAY)
+    efkpis:temporalResolutionValue "___"^^xsd:integer ;  # Placeholder for actual temporal resolution value
+    efkpis:startTime "___"^^xsd:dateTime ;  # Placeholder for actual start time
+    efkpis:endTime "___"^^xsd:dateTime .    # Placeholder for actual end time
