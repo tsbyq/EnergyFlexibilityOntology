@@ -1,0 +1,245 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix efkpis: <http://example.org/efkpis#> .
+
+# Classes
+efkpis:KPI rdf:type owl:Class .
+efkpis:Stakeholder rdf:type owl:Class .
+efkpis:DOEFlexibilityCategory rdf:type owl:Class .
+efkpis:Complexity rdf:type owl:Class .
+efkpis:Relevance rdf:type owl:Class .
+efkpis:PerformanceAspect rdf:type owl:Class .
+efkpis:SpatialResolution rdf:type owl:Class .
+efkpis:TimePeriod rdf:type owl:Class .
+efkpis:InputVariable rdf:type owl:Class .
+
+# Properties
+# ------------------------------------------------------------------------------
+## Datatype Properties
+# ------------------------------------------------------------------------------
+efkpis:hasRelevance rdf:type owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+efkpis:needsBaseline rdf:type owl:DatatypeProperty ;
+    rdfs:range xsd:boolean .
+
+efkpis:temporalResolution rdf:type owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+efkpis:acronym rdf:type owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+efkpis:startTime rdf:type owl:DatatypeProperty ;
+    rdfs:domain efkpis:TimePeriod ;
+    rdfs:range xsd:dateTime .
+
+efkpis:endTime rdf:type owl:DatatypeProperty ;
+    rdfs:domain efkpis:TimePeriod ;
+    rdfs:range xsd:dateTime .
+
+efkpis:timestampValue rdf:type owl:DatatypeProperty ;
+    rdfs:domain efkpis:InputVariable ;
+    rdfs:range xsd:dateTime .
+
+efkpis:temporalResolutionValue rdf:type owl:DatatypeProperty ;
+    rdfs:domain efkpis:InputVariable ;
+    rdfs:range xsd:integer .  # Temporal resolution value as an integer
+
+# ------------------------------------------------------------------------------
+## Object Properties
+# ------------------------------------------------------------------------------
+efkpis:hasUnit rdf:type owl:ObjectProperty ;  # Changed to ObjectProperty for broader range
+    rdfs:domain efkpis:KPI ;
+    rdfs:range owl:Thing .  # Allows both literals and class instances
+
+efkpis:hasComplexity rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range efkpis:Complexity .
+
+efkpis:hasRelevance rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range efkpis:Relevance .
+
+efkpis:hasInterestIn rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:Stakeholder ;
+    rdfs:range efkpis:KPI ;
+    owl:inverseOf efkpis:hasStakeholder .
+
+efkpis:hasStakeholder rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range efkpis:Stakeholder ;
+    owl:inverseOf efkpis:hasInterestIn .
+
+efkpis:hasSpatialResolution rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range efkpis:SpatialResolution .
+
+efkpis:doeFlexibilityCategory rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range efkpis:DOEFlexibilityCategory .
+
+efkpis:hasPerformanceAspect rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range efkpis:PerformanceAspect .
+
+efkpis:hasEvaluationWindow rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range efkpis:EvaluationWindow .
+
+efkpis:hasInputVariable rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range efkpis:InputVariable .
+
+efkpis:temporalResolutionUnit rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:InputVariable ;
+    rdfs:range owl:Individual .  # General range to accommodate individual OM units
+
+
+# ------------------------------------------------------------------------------
+## Complexity Instances
+# ------------------------------------------------------------------------------
+efkpis:LowComplexity rdf:type efkpis:Complexity ;
+    skos:definition "Indicates minimal data collection, processing, and calculation complexity." .
+
+efkpis:MediumComplexity rdf:type efkpis:Complexity ;
+    skos:definition "Indicates moderate data collection, processing, and calculation complexity." .
+
+efkpis:HighComplexity rdf:type efkpis:Complexity ;
+    skos:definition "Indicates significant data collection, processing, and calculation complexity, often requiring advanced computational resources or expertise." .
+
+# ------------------------------------------------------------------------------
+## Relevance Instances
+# ------------------------------------------------------------------------------
+efkpis:LowRelevance rdf:type efkpis:Relevance ;
+    skos:definition "Indicates a lower significance or impact of the KPI in decision-making or operational contexts." .
+
+efkpis:MediumRelevance rdf:type efkpis:Relevance ;
+    skos:definition "Indicates a moderate level of significance or impact of the KPI, balancing importance with other factors in decision-making or operations." .
+
+efkpis:HighRelevance rdf:type efkpis:Relevance ;
+    skos:definition "Indicates a high significance or impact of the KPI, often critical for decision-making or operational efficiency." .
+
+
+# ------------------------------------------------------------------------------
+## Stakeholder Instances
+# ------------------------------------------------------------------------------
+## BuildingOperator
+efkpis:BuildingOperator rdf:type efkpis:Stakeholder ;
+    rdfs:definition "An individual or entity responsible for the operational management of a building." ;
+    efkpis:hasInterestIn efkpis:FlexibilityFactor .
+
+## Researcher
+efkpis:Researcher rdf:type efkpis:Stakeholder ;
+    rdfs:definition "An individual or entity conducting research in areas related to energy flexibility and building performance." ;
+    efkpis:hasInterestIn efkpis:FlexibilityFactor .
+
+# ------------------------------------------------------------------------------
+## Spatial Resolution Instances
+# ------------------------------------------------------------------------------
+efkpis:BuildingLevel rdf:type efkpis:SpatialResolution ;
+    skos:definition "Indicates that the KPI is measured at the level of individual buildings." .
+
+efkpis:CommunityLevel rdf:type efkpis:SpatialResolution ;
+    skos:definition "Indicates that the KPI is measured at the community level, encompassing multiple buildings or infrastructure elements." .
+
+efkpis:CityLevel rdf:type efkpis:SpatialResolution ;
+    skos:definition "Indicates that the KPI is measured at the city level, reflecting urban-scale considerations." .
+
+efkpis:NationalLevel rdf:type efkpis:SpatialResolution ;
+    skos:definition "Indicates that the KPI is measured at the national level, encompassing country-wide data and implications." .
+
+# ------------------------------------------------------------------------------
+## DOE Flexibility Category Instances
+# ------------------------------------------------------------------------------
+# DOE Flexibility Categories
+efkpis:Efficiency rdf:type efkpis:DOEFlexibilityCategory ;
+    skos:definition "Refers to strategies or solutions aimed at improving energy efficiency, often through optimized usage or reduced wastage." .
+
+efkpis:Shed rdf:type efkpis:DOEFlexibilityCategory ;
+    skos:definition "Involves temporarily reducing energy use in response to a demand response event or high price periods to alleviate grid stress." .
+
+efkpis:Shift rdf:type efkpis:DOEFlexibilityCategory ;
+    skos:definition "Entails shifting energy use to different times, typically from peak to off-peak periods, to balance demand and supply." .
+
+efkpis:Modulation rdf:type efkpis:DOEFlexibilityCategory ;
+    skos:definition "Refers to the ability to modulate energy usage dynamically in response to grid conditions or renewable energy availability." .
+
+efkpis:Generation rdf:type efkpis:DOEFlexibilityCategory ;
+    skos:definition "Pertains to the generation aspect of energy flexibility, focusing on adaptable and responsive energy production, often from renewable sources." .
+
+# ------------------------------------------------------------------------------
+## Performance Aspect Instances
+# ------------------------------------------------------------------------------
+efkpis:PowerPerformance rdf:type efkpis:PerformanceAspect ;
+    skos:definition "Relates to the power-related performance of a system, focusing on aspects like peak power demand, load leveling, and power quality." .
+
+efkpis:EnergyPerformance rdf:type efkpis:PerformanceAspect ;
+    skos:definition "Concerns the energy usage efficiency and optimization, including total energy consumption and energy savings." .
+
+efkpis:CostPerformance rdf:type efkpis:PerformanceAspect ;
+    skos:definition "Focuses on the economic aspects, aiming to reduce costs associated with energy consumption and operation." .
+
+efkpis:EmissionPerformance rdf:type efkpis:PerformanceAspect ;
+    skos:definition "Targets the reduction of greenhouse gas emissions and environmental impact, aligning with sustainability goals." .
+
+efkpis:ComfortPerformance rdf:type efkpis:PerformanceAspect ;
+    skos:definition "Pertains to maintaining or enhancing occupant comfort in terms of temperature, air quality, and other environmental factors." .
+
+
+
+# ------------------------------------------------------------------------------
+## KPI Instances
+# ------------------------------------------------------------------------------
+## FlexibilityFactor
+efkpis:FlexibilityFactor rdf:type efkpis:KPI ;
+    rdfs:label "FlexibilityFactor" ;
+    skos:definition "Indicator of a quantity (e.g., energy, cost, emissions) during high load hours versus during low load hours, which ranges between -1 (quantity was only during high load hours) and 1 (quantity was only during low load hours)." ;
+    efkpis:hasUnit "factor" ;
+    efkpis:hasComplexity efkpis:LowComplexity ;
+    efkpis:hasRelevance efkpis:HighRelevance ;
+    efkpis:hasStakeholder efkpis:BuildingOperator, efkpis:Researcher ;
+    efkpis:acronym "FF" ;
+    efkpis:needsBaseline false ;
+    efkpis:hasEvaluationWindow efkpis:EvaluationWindow ;  # Instance of EvaluationWindow
+    efkpis:hasSpatialResolution efkpis:BuildingLevel ;
+    efkpis:doeFlexibilityCategory efkpis:Shift ;
+    efkpis:hasPerformanceAspect efkpis:EnergyPerformance, efkpis:PowerPerformance ;
+    efkpis:hasInputVariable efkpis:GenericLoadProfile, efkpis:HighLoadStartTimestamp, efkpis:HighLoadEndTimestamp .  # Example input variable instances
+
+
+# ------------------------------------------------------------------------------
+## Time Period Instances
+# ------------------------------------------------------------------------------
+efkpis:EvaluationWindow rdf:type efkpis:TimePeriod ;
+    efkpis:startTime "___"^^xsd:dateTime ;  # Placeholder for actual start time
+    efkpis:endTime "___"^^xsd:dateTime .    # Placeholder for actual end time
+
+
+# ------------------------------------------------------------------------------
+## Input Variable Instances
+# ------------------------------------------------------------------------------
+## HighLoadStartTimestamp
+efkpis:HighLoadStartTimestamp rdf:type efkpis:InputVariable ;
+    rdfs:label "HighLoadStartTimestamp" ;
+    skos:definition "The datetime when unit price/emission are higher, or the start of the peak hours." ;
+    efkpis:timestampValue "___"^^xsd:dateTime .  # Placeholder for actual datetime
+
+## HighLoadEndTimestamp
+efkpis:HighLoadEndTimestamp rdf:type efkpis:InputVariable ;
+    rdfs:label "HighLoadEndTimestamp" ;
+    skos:definition "The datetime when unit price/emission revert to normal, or the end of the peak hours." ;
+    efkpis:timestampValue "___"^^xsd:dateTime .  # Placeholder for actual datetime
+
+## GenericLoadProfile
+efkpis:GenericLoadProfile rdf:type efkpis:InputVariable ;
+    rdfs:label "GenericLoadProfile" ;
+    skos:definition "A generic time series of energy, cost, or GHG emissions, measured in uncontrolled conditions." ;
+    efkpis:temporalResolutionUnit om:second-Time ;  # Referencing OM unit for second, this can be changed to other units (e.g., om:hour, om:day)
+    efkpis:temporalResolutionValue "___"^^xsd:integer ;  # Placeholder for actual temporal resolution value
+    efkpis:startTime "___"^^xsd:dateTime ;  # Placeholder for actual start time
+    efkpis:endTime "___"^^xsd:dateTime .    # Placeholder for actual end time
+
