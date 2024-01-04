@@ -246,7 +246,7 @@ efkpis:ComfortPerformance rdf:type efkpis:PerformanceAspect ;
 # ------------------------------------------------------------------------------
 ## FlexibilityFactor
 efkpis:FlexibilityFactor rdf:type efkpis:KPI ;
-    rdfs:label "FlexibilityFactor" ;
+    rdfs:label "Flexibility Factor" ;
     skos:definition "Indicator of a quantity (e.g., energy, cost, emissions) during high load hours versus during low load hours, which ranges between -1 (quantity was only during high load hours) and 1 (quantity was only during low load hours)." ;
     efkpis:acronym "FF" ;
     efkpis:hasUnit unit:FRACTION;
@@ -274,8 +274,11 @@ efkpis:PeakPowerReduction rdf:type efkpis:KPI ;
     efkpis:hasEvaluationWindow efkpis:SingleEventEvaluationWindow ;  # Assuming this is an instance of efkpis:TimePeriod
     efkpis:hasSpatialResolution efkpis:UnspecifiedLevel ;
     efkpis:doeFlexibilityCategory efkpis:LoadShedding ;
-    efkpis:hasPerformanceAspect efkpis:PowerPerformance .
-    # efkpis:hasInputVariable
+    efkpis:hasPerformanceAspect efkpis:PowerPerformance ;
+    # efkpis:hasInputVariable efkpis:BaselineElectricPowerProfile, efkpis:FlexibleElectricPowerProfile .
+    efkpis:hasInputVariable efkpis:BaselineElectricPowerProfile, efkpis:FlexibleElectricPowerProfile, efkpis:PeakTimestamp .
+
+    # NOTE: Question: how "smart" should we make the python function? Should it be able to detect the peak hour automatically, or manual input only?
 
 
 # ------------------------------------------------------------------------------
@@ -297,6 +300,8 @@ efkpis:HighLoadStartTimestamp rdf:type efkpis:SingleValueInputVariable ;
     efkpis:physicalQuantity qudt:DATETIME ;  # Using QUDT ontology for datetime encoding
     efkpis:hasValue "___"^^xsd:dateTime .  # Placeholder for actual peak datetime value
 
+    # NOTE: we can add data source properties for input variables (e.g., Brick model, CSV file, etc.), this should be consistent with the config file.
+
 ## HighLoadEndTimestamp
 efkpis:HighLoadEndTimestamp rdf:type efkpis:SingleValueInputVariable ;
     rdfs:label "HighLoadEndTimestamp" ;
@@ -315,8 +320,9 @@ efkpis:PeakTimestamp rdf:type efkpis:SingleValueInputVariable ;
 ## GenericLoadProfile
 efkpis:GenericLoadProfile rdf:type efkpis:SerialValueInputVariable  ;
     rdfs:label "GenericLoadProfile" ;
-    skos:definition "A generic time series of energy, cost, or GHG emissions, measured in uncontrolled conditions." ;
+    skos:definition "A generic time series of energy, cost, or GHG emissions, measured in uncontrolled (unspecified) conditions." ;
     efkpis:physicalQuantity quantitykind:Energy ;  # Representing the physical quantity (e.g., energy, cost, emissions)
+    efkpis:hasUnit unit:KiloW-HR ;  # Assuming use of qudt ontology for unit
     efkpis:temporalResolutionUnit unit:SEC ;  # Referencing OM unit for second, this can be changed to other units (e.g., unit:HR, unit:DAY)
     efkpis:temporalResolutionValue "___"^^xsd:integer ;  # Placeholder for actual temporal resolution value
     efkpis:startTime "___"^^xsd:dateTime ;  # Placeholder for actual start time
@@ -362,3 +368,5 @@ _:flexiblePowerProfileDataSource rdf:type rdf:Description ;
     efkpis:filePath "file:///path/to/dummy_power_profile.csv" ;
     efkpis:fileFormat "CSV" ;
     efkpis:dataColumns "timestamp, flexiblePower (kW)" .
+
+    # NOTE: in order to map the semantic data model with the config file, we should ensure the field names are consistent in the config file.
