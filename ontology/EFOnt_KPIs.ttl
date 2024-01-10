@@ -61,11 +61,6 @@ efkpis:temporalResolutionValue rdf:type owl:DatatypeProperty ;
     rdfs:domain efkpis:InputVariable ;
     rdfs:range xsd:integer .  # Temporal resolution value as an integer
 
-efkpis:physicalQuantity rdf:type owl:ObjectProperty ;
-    rdfs:domain efkpis:InputVariable ;
-    rdfs:range [ rdf:type owl:Class ;
-                 owl:unionOf (qudt:QuantityKind qudt:DateTimeStringEncodingType) ] . # Linking to QUDT's class
-
 efkpis:filePath rdf:type owl:DatatypeProperty ;
     rdfs:domain rdf:Description ;
     rdfs:range xsd:string .
@@ -130,9 +125,19 @@ efkpis:temporalResolutionUnit rdf:type owl:ObjectProperty ;
     rdfs:domain efkpis:InputVariable ;
     rdfs:range owl:Individual .  # General range to accommodate individual OM units
 
+efkpis:physicalQuantity rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:InputVariable ;
+    rdfs:range [ rdf:type owl:Class ;
+                 owl:unionOf (qudt:QuantityKind qudt:DateTimeStringEncodingType) ] . # Linking to QUDT's class
+
 efkpis:dataSource rdf:type owl:ObjectProperty ;
     rdfs:domain efkpis:SerialValueInputVariable ;
     rdfs:range rdfs:Resource .  # General range to include any type of resource
+
+# Property for Function URL
+efkpis:pythonCodeURL rdf:type owl:ObjectProperty ;
+    rdfs:domain efkpis:KPI ;
+    rdfs:range xsd:anyURI .  # The range is any URI
 
 # ------------------------------------------------------------------------------
 ## Complexity Instances
@@ -258,7 +263,9 @@ efkpis:FlexibilityFactor rdf:type efkpis:KPI ;
     efkpis:hasSpatialResolution efkpis:BuildingLevel ;
     efkpis:doeFlexibilityCategory efkpis:Shift ;
     efkpis:hasPerformanceAspect efkpis:EnergyPerformance, efkpis:PowerPerformance ;
-    efkpis:hasInputVariable efkpis:GenericLoadProfile, efkpis:HighLoadStartTimestamp, efkpis:HighLoadEndTimestamp .  # Example input variable instances
+    efkpis:hasInputVariable efkpis:GenericLoadProfile, efkpis:HighLoadStartTimestamp, efkpis:HighLoadEndTimestamp ;  # Example input variable instances
+    efkpis:pythonCodeURL <https://github.com/HichamJohra/energy_flexibility_kpis/blob/bf5f03e04911c9e3b515b2316d0a52d98dd63428/energy_flexibility_kpis/kpi/energy_flexibility/load_shifting.py#L9C16-L9C16> . # TODO: make this a valid URL
+
 
 
 ## PeakPowerReduction
@@ -275,10 +282,27 @@ efkpis:PeakPowerReduction rdf:type efkpis:KPI ;
     efkpis:hasSpatialResolution efkpis:UnspecifiedLevel ;
     efkpis:doeFlexibilityCategory efkpis:LoadShedding ;
     efkpis:hasPerformanceAspect efkpis:PowerPerformance ;
-    # efkpis:hasInputVariable efkpis:BaselineElectricPowerProfile, efkpis:FlexibleElectricPowerProfile .
-    efkpis:hasInputVariable efkpis:BaselineElectricPowerProfile, efkpis:FlexibleElectricPowerProfile, efkpis:PeakTimestamp .
-
+    efkpis:hasInputVariable efkpis:BaselineElectricPowerProfile, efkpis:FlexibleElectricPowerProfile, efkpis:PeakTimestamp ;
+    efkpis:pythonCodeURL <https://github.com/HichamJohra/energy_flexibility_kpis/blob/bf5f03e04911c9e3b515b2316d0a52d98dd63428/energy_flexibility_kpis/kpi/energy_flexibility/peak_power_shedding.py#L9C16-L9C16> .
     # NOTE: Question: how "smart" should we make the python function? Should it be able to detect the peak hour automatically, or manual input only?
+
+
+## CapacityOfADR
+efkpis:CapacityOfADR rdf:type efkpis:KPI ;
+    rdfs:label "Capacity of ADR" ;
+    skos:definition "The amount of energy that can be added to or removed from the storage system during an ADR action (up/down-flex)." ;
+    efkpis:acronym "CADR" ;  # A suggested acronym
+    efkpis:hasUnit unit:KiloW-HR ;  # Assuming use of qudt ontology for unit
+    efkpis:hasRelevance efkpis:HighRelevance ;
+    efkpis:hasComplexity efkpis:LowComplexity ;
+    efkpis:needsBaseline true ;
+    efkpis:hasStakeholder efkpis:BuildingOperator, efkpis:TransmissionSystemOperator ;
+    efkpis:hasEvaluationWindow efkpis:SingleEventEvaluationWindow ;  # Assuming this is an instance of efkpis:TimePeriod
+    efkpis:hasSpatialResolution efkpis:UnspecifiedLevel ;
+    efkpis:doeFlexibilityCategory efkpis:LoadShifting, efkpis:LoadShedding ;
+    efkpis:hasPerformanceAspect efkpis:EnergyPerformance ;
+    efkpis:hasInputVariable efkpis:BaselineElectricEnergyProfile, efkpis:FlexibleElectricEnergyProfile, efkpis:HighLoadStartTimestamp, efkpis:HighLoadEndTimestamp ;  # Example input variable instances
+    efkpis:pythonCodeURL <https://github.com/HichamJohra/energy_flexibility_kpis/blob/bf5f03e04911c9e3b515b2316d0a52d98dd63428/energy_flexibility_kpis/kpi/energy_flexibility/energy_storage_capability.py#L9C16-L9C16> .
 
 
 # ------------------------------------------------------------------------------
@@ -353,6 +377,30 @@ efkpis:FlexibleElectricPowerProfile rdf:type efkpis:SerialValueInputVariable  ;
     efkpis:endTime "___"^^xsd:dateTime ;    # Placeholder for actual end time
     efkpis:dataDescription _:flexiblePowerProfileDataSource .
 
+## Baseline Electric Energy Profile
+efkpis:BaselineElectricEnergyProfile rdf:type efkpis:SerialValueInputVariable  ;
+    rdfs:label "Baseline Electric Energy Profile" ;
+    skos:definition "A time series representing the electric energy profile under normal (non-flexible) operation conditions, used as a baseline for comparison." ;
+    efkpis:physicalQuantity quantitykind:Energy ;  # Representing the physical quantity as energy
+    efkpis:hasUnit unit:KiloW-HR ;  # Using qudt ontology for kilowatt-hour unit
+    efkpis:temporalResolutionUnit unit:SEC ;  # Referencing OM unit for second, this can be changed to other units
+    efkpis:temporalResolutionValue "___"^^xsd:integer ;  # Placeholder for actual temporal resolution value
+    efkpis:startTime "___"^^xsd:dateTime ;  # Placeholder for actual start time
+    efkpis:endTime "___"^^xsd:dateTime ;    # Placeholder for actual end time
+    efkpis:dataDescription _:baselineEnergyProfileDataSource .
+
+## Flexible Electric Energy Profile
+efkpis:FlexibleElectricEnergyProfile rdf:type efkpis:SerialValueInputVariable  ;
+    rdfs:label "Flexible Electric Energy Profile" ;
+    skos:definition "A time series representing the electric energy profile during flexible operation, reflecting changes due to demand response or other flexibility strategies." ;
+    efkpis:physicalQuantity quantitykind:Energy ;  # Representing the physical quantity as energy
+    efkpis:hasUnit unit:KiloW-HR ;  # Using qudt ontology for kilowatt-hour unit
+    efkpis:temporalResolutionUnit unit:SEC ;  # Referencing OM unit for second, this can be changed to other units
+    efkpis:temporalResolutionValue "___"^^xsd:integer ;  # Placeholder for actual temporal resolution value
+    efkpis:startTime "___"^^xsd:dateTime ;  # Placeholder for actual start time
+    efkpis:endTime "___"^^xsd:dateTime ;    # Placeholder for actual end time
+    efkpis:dataDescription _:flexibleEnergyProfileDataSource .
+
 
 _:genericLoadProfileDataSource rdf:type rdf:Description ;
     efkpis:filePath "file:///path/to/generic_load_profile.csv" ;
@@ -368,5 +416,18 @@ _:flexiblePowerProfileDataSource rdf:type rdf:Description ;
     efkpis:filePath "file:///path/to/dummy_power_profile.csv" ;
     efkpis:fileFormat "CSV" ;
     efkpis:dataColumns "timestamp, flexiblePower (kW)" .
+
+_:baselineEnergyProfileDataSource rdf:type rdf:Description ;
+    efkpis:filePath "file:///path/to/baseline_energy_profile.csv" ;
+    efkpis:fileFormat "CSV" ;
+    efkpis:dataColumns "timestamp, baselineEnergy (kWh)" .
+
+_:flexibleEnergyProfileDataSource rdf:type rdf:Description ;
+    efkpis:filePath "file:///path/to/flexible_energy_profile.csv" ;
+    efkpis:fileFormat "CSV" ;
+    efkpis:dataColumns "timestamp, flexibleEnergy (kWh)" .
+
+
+
 
     # NOTE: in order to map the semantic data model with the config file, we should ensure the field names are consistent in the config file.
