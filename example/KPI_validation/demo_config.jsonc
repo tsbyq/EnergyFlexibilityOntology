@@ -1,0 +1,74 @@
+{
+    // Specify the evaluation window for KPI calculation
+    "evaluation_window": {
+        "start": "2019-01-01T00:00:00Z",
+        "end": "2019-01-02T00:00:00Z"
+    },
+
+    // Specify the peak timestamps within the evaluation window, or set manual_input to false to detect from timestamps automatically
+    "peak_timestamps": {
+        "manual_input": true, // If false, the peak timestamps within the evaluation_window will be detected automatically
+        "values": ["2019-01-01T12:00:00Z", "2019-01-01T13:00:00Z"]
+    },
+
+    // Specify the data source and how to read it
+    "data_source_type": "csv", // This could be other types (e.g., db, api, etc.)
+    "path_to_dataset": "path/to/dataset.csv", // This could be a path to a database or an API endpoint
+    "data_reading_method": "pandas", // This could be other methods (e.g., spark, influxdb, etc.)
+
+    // NOTE: We can add more parsing specs
+    "pandas_parsing_specs": {
+        "timestamps": {
+            "column_identifier": "Datetime",
+            "quantity": "time",
+            "dtype": "datetime",
+            "unit": null
+        },
+        "baseline_power_profile": {
+            "column_identifier": "Baseline (kW)",
+            "quantity": "power",
+            "dtype": "float",
+            "unit": "kW"
+        },
+        "flexible_power_profile":{
+            "column_identifier": "Flexible (kW)",
+            "quantity": "power",
+            "dtype": "float",
+            "unit": "kW"
+        },
+        "baseline_energy_profile": {
+            "column_identifier": "Baseline (kWh)",
+            "quantity": "energy",
+            "dtype": "float",
+            "unit": "kWh"
+        },
+        "flexible_energy_profile":{
+            "column_identifier": "Flexible (kWh)",
+            "quantity": "energy",
+            "dtype": "float",
+            "unit": "kWh"
+        },
+        "generic_quantity_profile": {
+            "column_identifier": "Cost ($)",
+            "quantity": null,
+            "dtype": "float",
+            "unit": null
+        },
+        "price_signal": {
+            "column_identifier": "Price ($/kWh)",
+            "quantity": "cost / energy",
+            "dtype": "float",
+            "unit": "$/kWh"
+        },
+        "emission_factor": {
+            "column_identifier": "Emission Factor (kgCO2e/kWh)",
+            "quantity": "mass / energy",
+            "dtype": "float",
+            "unit": "kgCO2e/kWh"
+        }
+    },
+    "other_parsing_specs": {
+        // ...
+    }
+    
+}
