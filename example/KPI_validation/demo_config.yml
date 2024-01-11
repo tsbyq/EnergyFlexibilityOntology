@@ -9,7 +9,7 @@ peak_timestamps:
     - "2019-01-01T13:00:00Z"
 
 data_source_type: "csv"
-path_to_dataset: "path/to/dataset.csv"
+path_to_dataset: "demo_validation_data.csv"
 data_reading_method: "pandas"
 
 pandas_parsing_specs:

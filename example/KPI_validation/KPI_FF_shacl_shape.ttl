@@ -1,0 +1,62 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix efkpis: <http://example.org/efkpis#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+efkpis:FlexibilityFactorShape a sh:NodeShape ;
+    sh:targetClass efkpis:FlexibilityFactor ;
+    
+    sh:property [
+        sh:path efkpis:hasInputVariable ;
+        sh:node efkpis:GenericLoadProfileConstraint ;
+    ];
+    
+    sh:property [
+        sh:path efkpis:hasInputVariable ;
+        sh:node efkpis:HighLoadStartTimestampConstraint ;
+    ];
+    
+    sh:property [
+        sh:path efkpis:hasInputVariable ;
+        sh:node efkpis:HighLoadEndTimestampConstraint ;
+    ];
+    
+    sh:property [
+        sh:path efkpis:hasEvaluationWindow ;
+        sh:node efkpis:EvaluationWindowConstraint ;
+    ].
+
+efkpis:GenericLoadProfileConstraint a sh:NodeShape ;
+    sh:targetClass efkpis:GenericLoadProfile ;
+    sh:property [
+        sh:path efkpis:physicalQuantity ;
+        sh:hasValue quantitykind:Energy ;
+    ];
+    sh:property [
+        sh:path efkpis:temporalResolutionUnit ;
+        sh:hasValue unit:SEC ;
+    ].
+
+efkpis:HighLoadStartTimestampConstraint a sh:NodeShape ;
+    sh:targetClass efkpis:HighLoadStartTimestamp ;
+    sh:property [
+        sh:path efkpis:hasValue ;
+        sh:datatype xsd:dateTime ;
+    ].
+
+efkpis:HighLoadEndTimestampConstraint a sh:NodeShape ;
+    sh:targetClass efkpis:HighLoadEndTimestamp ;
+    sh:property [
+        sh:path efkpis:hasValue ;
+        sh:datatype xsd:dateTime ;
+    ].
+
+efkpis:EvaluationWindowConstraint a sh:NodeShape ;
+    sh:targetClass efkpis:EvaluationWindow ;
+    sh:property [
+        sh:path efkpis:startTime ;
+        sh:datatype xsd:dateTime ;
+    ];
+    sh:property [
+        sh:path efkpis:endTime ;
+        sh:datatype xsd:dateTime ;
+    ].
