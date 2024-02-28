@@ -12,6 +12,7 @@ data_source_type: "csv"
 path_to_dataset: "demo_validation_data.csv"
 data_reading_method: "pandas"
 
+# NOTE: these could be optional to advanced users, normal users can just follow the template with the pre-defined column names 
 pandas_parsing_specs:
   timestamps:
     column_identifier: "Datetime"

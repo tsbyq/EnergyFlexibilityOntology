@@ -1,0 +1,62 @@
+evaluation_window:
+  start: "2019-01-01T00:00:00Z"
+  end: "2019-01-02T00:00:00Z"
+
+peak_timestamps:
+  manual_input: true
+  values:
+    - "2019-01-01T12:00:00Z"
+    - "2019-01-01T13:00:00Z"
+
+# NOTE: List of data sources with individual parsing specs
+data_sources:
+  - source_type: "csv"
+    path_to_dataset: "path/to/baseline_power_data.csv"
+    data_reading_method: "pandas"
+    pandas_parsing_specs:
+      timestamps:
+        column_identifier: "Datetime"
+        quantity: "time"
+        dtype: "datetime"
+        unit: null
+      baseline_power_profile:
+        column_identifier: "Baseline (kW)"
+        quantity: "power"
+        dtype: "float"
+        unit: "kW"
+
+  - source_type: "csv"
+    path_to_dataset: "path/to/flexible_power_data.csv"
+    data_reading_method: "pandas"
+    pandas_parsing_specs:
+      timestamps:
+        column_identifier: "Datetime"
+        quantity: "time"
+        dtype: "datetime"
+        unit: null
+      flexible_power_profile:
+        column_identifier: "Flexible (kW)"
+        quantity: "power"
+        dtype: "float"
+        unit: "kW"
+
+  - source_type: "csv"
+    path_to_dataset: "path/to/energy_cost_data.csv"
+    data_reading_method: "pandas"
+    pandas_parsing_specs:
+      timestamps:
+        column_identifier: "Datetime"
+        quantity: "time"
+        dtype: "datetime"
+        unit: null
+      generic_quantity_profile:
+        column_identifier: "Cost ($)"
+        quantity: null
+        dtype: "float"
+        unit: null
+
+# ... Additional data sources can be added similarly
+
+# other_parsing_specs can still be used for further customization
+other_parsing_specs:
+  # ... (Additional specifications can be added here)
